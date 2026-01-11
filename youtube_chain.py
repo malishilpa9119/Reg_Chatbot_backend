@@ -56,15 +56,22 @@ def _get_llm() -> ChatGroq:
     return _LLM
 
 
-def _fetch_transcript(video_id: str) -> Optional[str]:
+def _fetch_transcript(video_id: str) -> str:
     try:
-        # transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=["en"])
-        transcript_list = YouTubeTranscriptApi().fetch(video_id, languages=["en"])
-    except (TranscriptsDisabled, NoTranscriptFound, VideoUnavailable):
-        return None
+        transcript_list = YouTubeTranscriptApi().fetch(
+            video_id,
+            languages=["en"]
+        )
 
-    transcript_text = " ".join(chunk["text"] for chunk in transcript_list)
-    return transcript_text.strip() or None
+        transcript_text = " ".join(chunk.text for chunk in transcript_list)
+        return transcript_text
+
+    except TranscriptsDisabled:
+        raise ValueError("Transcript not available for this video")
+
+    except Exception as e:
+        raise ValueError(str(e))
+
 
 
 def _get_vector_store(video_id: str, transcript_text: str) -> FAISS:
