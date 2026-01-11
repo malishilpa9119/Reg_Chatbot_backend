@@ -58,7 +58,8 @@ def _get_llm() -> ChatGroq:
 
 def _fetch_transcript(video_id: str) -> Optional[str]:
     try:
-        transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=["en"])
+        # transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=["en"])
+        transcript_list = YouTubeTranscriptApi().fetch(video_id, languages=["en"])
     except (TranscriptsDisabled, NoTranscriptFound, VideoUnavailable):
         return None
 
